@@ -1,0 +1,13 @@
+body {
+  font: 14px "Helvetica Neue" Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#bigtemp {
+  font-size: 50vh;
+  line-height: 100vh;
+  text-align: center;
+}
