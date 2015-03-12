@@ -23,6 +23,7 @@ var myFirebaseRef = new Firebase("https://shining-fire-1483.firebaseio.com/");
 
 // DB
 var db = new sqlite3.Database('./piTemps.db');
+var brewName = 'testBrew';
 
 function insertTemp(data){
    // data is a javascript object
@@ -31,6 +32,11 @@ function insertTemp(data){
    statement.run(data.temperature_record[0].unix_time, data.temperature_record[0].celsius);
    // Execute the statement
    statement.finalize();
+   myFirebaseRef.child('temps').push({
+     name: brewName,
+     timestamp: data.temperature_record[0].unix_time,
+     temp: data.temperature_record[0].celsius
+  });
 }
 
 // Read current temperature from sensor

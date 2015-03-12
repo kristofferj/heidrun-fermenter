@@ -5,5 +5,8 @@ var router = express.Router();
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express', currentTemp: temp||error });
 });
+router.get('/getTemp', function(req, res) {
+  res.send('temp');
+});
 
 module.exports = router;
