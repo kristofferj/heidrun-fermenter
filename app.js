@@ -35,7 +35,7 @@ function insertTemp(data){
 
 // Read current temperature from sensor
 function readTemp(callback){
-   fs.readFile('/sys/bus/w1/devices/28-00000400a88a/w1_slave', function(err, buffer)
+   fs.readFile('/sys/bus/w1/devices/28-000006a98b41/w1_slave', function(err, buffer)
 	{
       if (err){
          console.error(err);
