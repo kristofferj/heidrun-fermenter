@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var browserify = require('browserify-middleware');
 
 var fs = require('fs');
 var sys = require('sys');
@@ -23,7 +24,8 @@ var myFirebaseRef = new Firebase("https://shining-fire-1483.firebaseio.com/");
 
 // DB
 var db = new sqlite3.Database('./piTemps.db');
-var brewName = 'testBrew';
+
+app.get('/js/app.js', browserify('./browser/app.js'));
 
 function insertTemp(data){
    // data is a javascript object
@@ -32,20 +34,24 @@ function insertTemp(data){
    statement.run(data.temperature_record[0].unix_time, data.temperature_record[0].celsius);
    // Execute the statement
    statement.finalize();
-   myFirebaseRef.child('temps').push({
-     name: brewName,
-     timestamp: data.temperature_record[0].unix_time,
-     temp: data.temperature_record[0].celsius
-  });
 }
 
 // Read current temperature from sensor
 function readTemp(callback){
-   fs.readFile('/sys/bus/w1/devices/28-000006a98b41/w1_slave', function(err, buffer)
+
+  fs.readFile('/sys/bus/w1/devices/28-00000400a88a/w1_slave', function(err, buffer)
 	{
       if (err){
+         console.error('Could not find device');
          console.error(err);
-         process.exit(1);
+         var data = {
+            temperature_record:[{
+            unix_time: Date.now(),
+            celsius: 25.0
+         }]};
+         callback(data);
+         return;
+         //process.exit(1);
       }
 
       // Read data from file (using fast node ASCII encoding).
@@ -75,6 +81,24 @@ function logTemp(interval){
       readTemp(insertTemp);
       // Set the repeat interval (milliseconds). Third argument is passed as callback function to first (i.e. readTemp(insertTemp)).
       setInterval(readTemp, interval, insertTemp);
+};
+
+// Get temperature records from database
+function selectTemp(num_records, start_date, callback){
+   // - Num records is an SQL filter from latest record back trough time series,
+   // - start_date is the first date in the time-series required,
+   // - callback is the output function
+   var current_temp = db.all("SELECT * FROM (SELECT * FROM temperature_records WHERE unix_time > (strftime('%s',?)*1000) ORDER BY unix_time DESC LIMIT ?) ORDER BY unix_time;", start_date, num_records,
+      function(err, rows){
+         if (err){
+			   response.writeHead(500, { "Content-type": "text/html" });
+			   response.end(err + "\n");
+			   console.log('Error serving querying database. ' + err);
+			   return;
+				      }
+         data = {temperature_record:[rows]}
+         callback(data);
+   });
 };
 
 // Start temperature logging (every 5 min).

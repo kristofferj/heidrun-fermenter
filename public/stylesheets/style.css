@@ -1,13 +1,54 @@
 body {
   font: 14px "Helvetica Neue" Helvetica, Arial, sans-serif;
+  background-color: #231F20;
 }
+
+
+/*$brown = #231F20
+$blue = #00ADEE
+$yellow = #FDC010
+$red = #D42B27*/
+
 
 a {
   color: #00B7FF;
 }
 
+#chart .line {
+  stroke: #00ADEE;
+  fill: transparent;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: #00ADEE;
+  stroke-width: 1.5px;
+}
+#chart text {
+  fill: #fff;
+}
+
+
 #bigtemp {
-  font-size: 50vh;
+  font-weight: 100;
+  color: #fff;
+  font-size: 25vh;
   line-height: 100vh;
   text-align: center;
+}
+
+#chart {
+  position: fixed;
+  bottom: 0;
+  left:0;
+  height:500px;
+  width: 100%;
+  box-sizing: border-box;
 }
