@@ -27,7 +27,10 @@ var myFirebaseRef = new Firebase("https://shining-fire-1483.firebaseio.com/");
 // DB
 var db = new sqlite3.Database('./piTemps.db');
 
-app.get('/js/app.js', browserify('./browser/app.js'));
+//app.get('/js/app.js', browserify('./browser/app.js'));
+app.use('/bower_components',  express.static(__dirname + '/app/bower_components'));
+app.use('/js/app.js',  express.static(__dirname + '/browser/app.js'));
+
 
 function insertTemp(data){
    // data is a javascript object
