@@ -16,6 +16,8 @@ var Firebase = require("firebase");
 
 var app = express();
 
+var brewName = 'testBrew';
+
 var tempDevice = '/sys/bus/w1/devices/28-000006a98b41/w1_slave';
 
 
@@ -33,6 +35,11 @@ function insertTemp(data){
    // Insert values into prepared statement
    statement.run(data.temperature_record[0].unix_time, data.temperature_record[0].celsius);
    // Execute the statement
+   myFirebaseRef.child('temps').push({
+     name: brewName,
+     timestamp: data.temperature_record[0].unix_time,
+     temp: data.temperature_record[0].celsius
+   });
    statement.finalize();
 }
 
@@ -47,7 +54,7 @@ function readTemp(callback){
          var data = {
             temperature_record:[{
             unix_time: Date.now(),
-            celsius: 25.0
+            celsius: '0'
          }]};
          callback(data);
          return;
