@@ -1,7 +1,4 @@
-var d3 = require('d3');
-var nv = require('nvd3');
-var $ = require('jquery');
-var Firebase = require('firebase');
+
 
 var ref = new Firebase('https://shining-fire-1483.firebaseio.com');
 
@@ -11,8 +8,6 @@ function updateTemps(temps) {
   var lastTemp = temps[temps.length-1].temp;
   $('#bigtemp').html(lastTemp + '˚C');
 }
-
-console.log(nv);
 
 function paintChart(temps) {
 
