@@ -36,7 +36,7 @@ app.use('/js/app.js',  express.static(__dirname + '/browser/app.js'));
 
 function insertTemp(data){
    // data is a javascript object
-   var statement = db.prepare("INSERT INTO temperature_records VALUES (?, ?)");
+   var statement = db.prepare("INSERT INTO temperature_records VALUES (?, ?, ?)");
    // Insert values into prepared statement
    statement.run(data.temperature_record[0].unix_time, data.temperature_record[0].celsius, data.temperature_record[0].sensor);
    // Execute the statement
