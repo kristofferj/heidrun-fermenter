@@ -40,11 +40,15 @@ function insertTemp(data){
    // Insert values into prepared statement
    statement.run(data.temperature_record[0].unix_time, data.temperature_record[0].celsius, data.temperature_record[0].sensor);
    // Execute the statement
-   myFirebaseRef.child('temps').push({
+   myFirebaseRef.child(data.temperature_record[0].sensor).push({
      name: brewName,
      timestamp: data.temperature_record[0].unix_time,
-     temp: data.temperature_record[0].celsius,
-     sensor: data.temperature_record[0].sensor
+     temp: data.temperature_record[0].celsius
+   });
+   myFirebaseRef.child(data.temperature_record[0].sensor).push({
+     name: brewName,
+     timestamp: data.temperature_record[0].unix_time,
+     temp: data.temperature_record[0].celsius
    });
    statement.finalize();
 }
