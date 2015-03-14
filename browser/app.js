@@ -11,9 +11,14 @@ function updateTemps(temps) {
 
 function paintChart(temps) {
 
-  var margin = {top: 20, right: 20, bottom: 30, left: 50},
-      width = 960 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
+  var margin = {
+    top: 20,
+    right: 20,
+    bottom: 30,
+    left: 50
+    },
+  width = window.innerWidth - margin.left - margin.right,
+  height = window.innerHeight - margin.top - margin.bottom;
 
   var parseDate = d3.time.format("%d-%b-%y").parse;
 

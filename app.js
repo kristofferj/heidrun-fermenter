@@ -18,7 +18,9 @@ var app = express();
 
 var brewName = 'testBrew';
 
-var tempDevice = '/sys/bus/w1/devices/28-000006a98b41/w1_slave';
+var fermenterSensor = '/sys/bus/w1/devices/28-000006a98b41/w1_slave';
+var roomSensor =      '/sys/bus/w1/devices/28-000006aaa23b/w1_slave';
+
 
 
 // Firebase setup
@@ -47,9 +49,9 @@ function insertTemp(data){
 }
 
 // Read current temperature from sensor
-function readTemp(callback){
+function readTemp(callback, file, sensor){
 
-  fs.readFile('/sys/bus/w1/devices/28-000006a98b41/w1_slave', function(err, buffer)
+  fs.readFile(file, function(err, buffer)
 	{
       if (err){
          console.error('Could not find device');
@@ -57,7 +59,8 @@ function readTemp(callback){
          var data = {
             temperature_record:[{
             unix_time: Date.now(),
-            celsius: '0'
+            celsius: '0',
+            sensor: 'false'
          }]};
          callback(data);
          return;
@@ -77,7 +80,8 @@ function readTemp(callback){
    	var data = {
             temperature_record:[{
             unix_time: Date.now(),
-            celsius: temp
+            celsius: temp,
+            sensor: sensor
             }]};
 
       // Execute call back with data
@@ -88,7 +92,8 @@ function readTemp(callback){
 // Create a wrapper function which we'll use specifically for logging
 function logTemp(interval){
       // Call the readTemp function with the insertTemp function as output to get initial reading
-      readTemp(insertTemp);
+      readTemp(insertTemp, fermenterSensor, 'fermenter');
+      readTemp(insertTemp, roomSensor, 'room');
       // Set the repeat interval (milliseconds). Third argument is passed as callback function to first (i.e. readTemp(insertTemp)).
       setInterval(readTemp, interval, insertTemp);
 };
