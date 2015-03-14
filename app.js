@@ -38,12 +38,13 @@ function insertTemp(data){
    // data is a javascript object
    var statement = db.prepare("INSERT INTO temperature_records VALUES (?, ?)");
    // Insert values into prepared statement
-   statement.run(data.temperature_record[0].unix_time, data.temperature_record[0].celsius);
+   statement.run(data.temperature_record[0].unix_time, data.temperature_record[0].celsius, data.temperature_record[0].sensor);
    // Execute the statement
    myFirebaseRef.child('temps').push({
      name: brewName,
      timestamp: data.temperature_record[0].unix_time,
-     temp: data.temperature_record[0].celsius
+     temp: data.temperature_record[0].celsius,
+     sensor: data.temperature_record[0].sensor
    });
    statement.finalize();
 }
