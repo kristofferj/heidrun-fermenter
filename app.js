@@ -29,11 +29,6 @@ var myFirebaseRef = new Firebase("https://shining-fire-1483.firebaseio.com/");
 // DB
 var db = new sqlite3.Database('./piTemps.db');
 
-//app.get('/js/app.js', browserify('./browser/app.js'));
-app.use('/bower_components',  express.static(__dirname + '/app/bower_components'));
-app.use('/js/app.js',  express.static(__dirname + '/browser/app.js'));
-
-
 function insertTemp(data){
    // data is a javascript object
    var statement = db.prepare("INSERT INTO temperature_records VALUES (?, ?, ?)");
@@ -54,53 +49,91 @@ function insertTemp(data){
 }
 
 // Read current temperature from sensor
-function readTemp(callback, file, sensor){
+function readTemp(callback){
 
-  fs.readFile(file, function(err, buffer)
-	{
-      if (err){
-         console.error('Could not find device');
-         console.error(err);
-         var data = {
-            temperature_record:[{
-            unix_time: Date.now(),
-            celsius: '0',
-            sensor: 'false'
-         }]};
-         callback(data);
-         return;
-         //process.exit(1);
-      }
+  // Fermenter
+  fs.readFile('/sys/bus/w1/devices/28-000006a98b41/w1_slave', function(err, buffer) {
+    if (err){
+       console.error('Could not find device');
+       console.error(err);
+       var data = {
+          temperature_record:[{
+          unix_time: Date.now(),
+          celsius: '0',
+          sensor: 'fermenter'
+       }]};
+       //callback(data);
+       return;
+       //process.exit(1);
+    }
 
-      // Read data from file (using fast node ASCII encoding).
-      var data = buffer.toString('ascii').split(" "); // Split by space
+    // Read data from file (using fast node ASCII encoding).
+    var data = buffer.toString('ascii').split(" "); // Split by space
 
-      // Extract temperature from string and divide by 1000 to give celsius
-      var temp  = parseFloat(data[data.length-1].split("=")[1])/1000.0;
+    // Extract temperature from string and divide by 1000 to give celsius
+    var temp  = parseFloat(data[data.length-1].split("=")[1])/1000.0;
 
-      // Round to one decimal place
-      temp = Math.round(temp * 10) / 10;
+    // Round to one decimal place
+    temp = Math.round(temp * 10) / 10;
 
-      // Add date/time to temperature
+    // Add date/time to temperature
    	var data = {
-            temperature_record:[{
-            unix_time: Date.now(),
-            celsius: temp,
-            sensor: sensor
-            }]};
+      temperature_record:[{
+        unix_time: Date.now(),
+        celsius: temp,
+        sensor: 'fermenter'
+      }]
+    };
+    // Execute call back with data
+    callback(data);
+  });
 
-      // Execute call back with data
-      callback(data);
-   });
+  // Room
+  fs.readFile('/sys/bus/w1/devices/28-000006aaa23b/w1_slave', function(err, buffer) {
+    if (err){
+       console.error('Could not find device');
+       console.error(err);
+       var data = {
+          temperature_record:[{
+          unix_time: Date.now(),
+          celsius: '0',
+          sensor: 'room'
+       }]};
+       //callback(data);
+       return;
+       //process.exit(1);
+    }
+
+    // Read data from file (using fast node ASCII encoding).
+    var data = buffer.toString('ascii').split(" "); // Split by space
+
+    // Extract temperature from string and divide by 1000 to give celsius
+    var temp  = parseFloat(data[data.length-1].split("=")[1])/1000.0;
+
+    // Round to one decimal place
+    temp = Math.round(temp * 10) / 10;
+
+    // Add date/time to temperature
+   	var data = {
+      temperature_record:[{
+        unix_time: Date.now(),
+        celsius: temp,
+        sensor: 'rom'
+      }]
+    };
+    // Execute call back with data
+    callback(data);
+  });
+
+
 };
 
 // Create a wrapper function which we'll use specifically for logging
 function logTemp(interval){
-      // Call the readTemp function with the insertTemp function as output to get initial reading
-      readTemp(insertTemp, fermenterSensor, 'fermenter');
-      readTemp(insertTemp, roomSensor, 'room');
-      // Set the repeat interval (milliseconds). Third argument is passed as callback function to first (i.e. readTemp(insertTemp)).
-      setInterval(readTemp, interval, insertTemp);
+  // Call the readTemp function with the insertTemp function as output to get initial reading
+  readTemp(insertTemp);
+  // Set the repeat interval (milliseconds). Third argument is passed as callback function to first (i.e. readTemp(insertTemp)).
+  setInterval(readTemp, interval, insertTemp);
 };
 
 // Get temperature records from database
