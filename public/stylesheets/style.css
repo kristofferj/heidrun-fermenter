@@ -26,11 +26,18 @@ a {
   shape-rendering: crispEdges;
 }
 
-.line {
+.line.room {
   fill: none;
   stroke: #00ADEE;
   stroke-width: 1.5px;
 }
+
+.line.fermenter {
+  fill: none;
+  stroke: red;
+  stroke-width: 1.5px;
+}
+
 #chart text {
   fill: #fff;
 }

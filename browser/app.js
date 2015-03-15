@@ -4,8 +4,7 @@ var ref = new Firebase('https://shining-fire-1483.firebaseio.com');
 
 
 function updateTemps(temps) {
-  console.log(temps);
-  var lastTemp = temps[temps.length-1].temp;
+  var lastTemp = temps.fermenter[temps.fermenter.length-1].temp;
   $('#bigtemp').html(lastTemp + '˚C');
 }
 
@@ -37,8 +36,14 @@ function paintChart(temps) {
       .orient("left");
 
   var line = d3.svg.line()
-      .x(function(d) { return x(d.timestamp); })
-      .y(function(d) { return y(d.temp); });
+      .x(function(d) {
+        console.log(d);
+        return x(d.timestamp);
+      })
+      .y(function(d) {
+        console.log(d);
+        return y(d.temp);
+      });
 
   var svg = d3.select("#chart").append("svg")
       .attr("width", width + margin.left + margin.right)
@@ -52,8 +57,8 @@ function paintChart(temps) {
   //   d.temp = +d.temp;
   // });
 
-  x.domain(d3.extent(temps, function(d) { return d.timestamp; }));
-  y.domain(d3.extent(temps, function(d) { return d.temp; }));
+  x.domain(d3.extent(temps.fermenter, function(d) { return d.timestamp; }));
+  y.domain(d3.extent(temps.fermenter, function(d) { return d.temp; }));
 
   svg.append("g")
       .attr("class", "x axis")
@@ -71,8 +76,15 @@ function paintChart(temps) {
       .text("˚C");
 
   svg.append("path")
-      .datum(temps)
+      .datum(temps.fermenter)
       .attr("class", "line")
+      .attr("class", "fermenter")
+      .attr("d", line);
+
+  svg.append("path")
+      .datum(temps.room)
+      .attr("class", "line")
+      .attr("class", "room")
       .attr("d", line);
 
 }
@@ -81,10 +93,14 @@ $(document).ready( function() {
 
   // Reads temps from firebase
   ref.on("value", function(snapshot) {
-    var temps = snapshot.val();
-    temps = $.map(temps.temps, function(value, index) {
+    var values = snapshot.val();
+    fermenter = $.map(values.fermenter, function(value, index) {
       return [value];
     });
+    room = $.map(values.room, function(value, index) {
+      return [value];
+    });
+    var temps = {fermenter:fermenter, room:room};
     updateTemps(temps);
     paintChart(temps);
     //console.log(snapshot.val());
