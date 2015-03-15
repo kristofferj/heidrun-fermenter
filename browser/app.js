@@ -37,11 +37,9 @@ function paintChart(temps) {
 
   var line = d3.svg.line()
       .x(function(d) {
-        console.log(d);
         return x(d.timestamp);
       })
       .y(function(d) {
-        console.log(d);
         return y(d.temp);
       });
 
@@ -57,8 +55,18 @@ function paintChart(temps) {
   //   d.temp = +d.temp;
   // });
 
+  var yMaxFermenter = d3.max( temps.fermenter );
+  var yMaxRoom = d3.max( temps.room );
+  var yMinFermenter = d3.max( temps.fermenter );
+  var yMinRoom = d3.max( temps.room );
+
+  var yMax = Math.max(yMaxFermenter.temp, yMaxRoom.temp);
+  var yMin = Math.min(yMinFermenter.temp, yMinRoom.temp)
+
+
+
   x.domain(d3.extent(temps.fermenter, function(d) { return d.timestamp; }));
-  y.domain(d3.extent(temps.fermenter, function(d) { return d.temp; }));
+  y.domain([yMin-5,yMax+5]);
 
   svg.append("g")
       .attr("class", "x axis")
@@ -75,19 +83,21 @@ function paintChart(temps) {
       .style("text-anchor", "end")
       .text("˚C");
 
+  //var fermenter = svg.append("g");
+  //var room = svg.append("g");
+
   svg.append("path")
       .datum(temps.fermenter)
-      .attr("class", "line")
-      .attr("class", "fermenter")
+      .attr("class", "line fermenter")
       .attr("d", line);
 
   svg.append("path")
       .datum(temps.room)
-      .attr("class", "line")
-      .attr("class", "room")
+      .attr("class", "line room")
       .attr("d", line);
 
 }
+
 
 $(document).ready( function() {
 

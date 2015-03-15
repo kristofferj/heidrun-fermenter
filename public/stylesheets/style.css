@@ -14,10 +14,6 @@ a {
   color: #00B7FF;
 }
 
-#chart .line {
-  stroke: #00ADEE;
-  fill: transparent;
-}
 
 .axis path,
 .axis line {
@@ -26,15 +22,15 @@ a {
   shape-rendering: crispEdges;
 }
 
-.line.room {
+#chart .line.room {
   fill: none;
   stroke: #00ADEE;
   stroke-width: 1.5px;
 }
 
-.line.fermenter {
+#chart .line.fermenter {
   fill: none;
-  stroke: red;
+  stroke: #FDC010;
   stroke-width: 1.5px;
 }
 
@@ -49,6 +45,7 @@ a {
   font-size: 25vh;
   line-height: 100vh;
   text-align: center;
+  z-index: 1000;
 }
 
 #chart {

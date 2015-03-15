@@ -155,6 +155,7 @@ function selectTemp(num_records, start_date, callback){
 
 // Start temperature logging (every 5 min).
 var msecs = (60 * 5) * 1000; // log interval duration in milliseconds
+msecs = 10000;
 logTemp(msecs);
 
 // view engine setup
