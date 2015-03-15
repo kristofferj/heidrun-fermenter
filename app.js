@@ -18,16 +18,15 @@ var app = express();
 
 var brewName = 'testBrew';
 
-var fermenterSensor = '/sys/bus/w1/devices/28-000006a98b41/w1_slave';
-var roomSensor =      '/sys/bus/w1/devices/28-000006aaa23b/w1_slave';
-
-
-
 // Firebase setup
 var myFirebaseRef = new Firebase("https://shining-fire-1483.firebaseio.com/");
 
 // DB
 var db = new sqlite3.Database('./piTemps.db');
+
+// Using bower
+app.use('/bower_components',  express.static(__dirname + '/app/bower_components'));
+app.use('/js/app.js',  express.static(__dirname + '/browser/app.js'));
 
 function insertTemp(data){
    // data is a javascript object
@@ -118,7 +117,7 @@ function readTemp(callback){
       temperature_record:[{
         unix_time: Date.now(),
         celsius: temp,
-        sensor: 'rom'
+        sensor: 'room'
       }]
     };
     // Execute call back with data
